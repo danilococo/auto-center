@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><title>Auto Center Veloz</title>
+    <style>
+    body{font:14px/1.5 system-ui,sans-serif;margin:0;background:#f2f5f8;color:#1b2733}
+    header{background:#1f4e79;color:#fff;padding:12px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    header b{font-size:15px}
+    nav{margin-left:auto;display:flex;gap:4px}
+    nav button{background:#ffffff2e;color:#fff;border:0;padding:6px 13px;border-radius:6px;font:inherit;cursor:pointer}
+    nav button.on{background:#fff;color:#1f4e79}
+    main{padding:18px;max-width:1500px;margin:auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+    .col{background:#e7edf4;border-radius:9px;padding:9px;min-height:100px}
+    .col h3{font-size:11px;text-transform:uppercase;margin:0 0 8px;color:#33475b;display:flex;gap:6px}
+    .col h3 span{margin-left:auto;background:#fff;border-radius:9px;padding:0 7px;color:#5a6672}
+    .c{background:#fff;border:1px solid #d8e0e8;border-left:3px solid #d8e0e8;border-radius:7px;padding:9px;margin-bottom:7px;cursor:pointer;font-size:13px}
+    .c:hover{border-left-color:#1f4e79}
+    .c.al{border-left-color:#c0392b}
+    .c i{font-family:monospace;font-style:normal;background:#1b2733;color:#fff;padding:1px 5px;border-radius:3px;font-size:11px}
+    .c em{font-style:normal;color:#5a6672;font-size:12px}
+    .c u{text-decoration:none;float:right;font-weight:700;font-size:11px;padding:1px 7px;border-radius:9px;background:#eef2f6;color:#5a6672}
+    .c u.r{background:#fdecea;color:#c0392b}
+    .c u.a{background:#fdf3d7;color:#8a6316}
+    .k{background:#fff;border:1px solid #d8e0e8;border-radius:9px;padding:12px 14px;margin-bottom:14px}
+    .k b{display:block;font-size:11px;color:#5a6672;text-transform:uppercase}
+    .k i{font-style:normal;font-size:24px;font-weight:700;color:#1f4e79}
+    #mod{position:fixed;inset:0;background:#101c2a99;display:none;overflow:auto;padding:24px 12px;z-index:9}
+    #mod.on{display:block}
+    .box{background:#fff;border-radius:12px;max-width:760px;margin:auto;overflow:hidden}
+    .box>h2{background:#1f4e79;color:#fff;margin:0;padding:14px 18px;font-size:16px;display:flex}
+    .box>h2 button{margin-left:auto;background:0;border:0;color:#fff;font-size:22px;cursor:pointer}
+    .box>div{padding:18px}
+    button.b{border:1px solid #d8e0e8;background:#fff;border-radius:7px;padding:8px 14px;font:inherit;cursor:pointer}
+    button.b.p{background:#1f4e79;color:#fff;border-color:#1f4e79}
+    button.b.v{background:#2e7d4f;color:#fff;border-color:#2e7d4f}
+    button.b.r{color:#c0392b;border-color:#c0392b}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px;text-align:left;border-bottom:1px solid #edf1f5}
+    th{font-size:11px;color:#5a6672;text-transform:uppercase}
+    td:last-child,th:last-child{text-align:right}
+    p{font-size:13px;color:#5a6672}
+    .s{background:#e7f0fa;border-left:3px solid #2e6da4;padding:10px 13px;border-radius:6px;font-size:13px}
+    .t{background:#fdf3d7;border-left:3px solid #d97706}
+    .phone{max-width:420px;margin:auto;background:#fff;border:1px solid #d8e0e8;border-radius:16px;overflow:hidden}
+    .phone>h4{background:#1f4e79;color:#fff;margin:0;padding:16px;font-size:16px}
+    .phone>h4 small{display:block;font-weight:400;opacity:.85;font-size:12px}
+    .phone>div{padding:16px}
+    .cta{position:sticky;bottom:0;background:#fff;border-top:2px solid #d8e0e8;padding:13px 16px;font-weight:700}
+    input,textarea,select{width:100%;padding:8px;border:1px solid #d8e0e8;border-radius:6px;font:inherit;margin-top:3px}
+    label{font-size:12px;font-weight:700;color:#33475b;display:block;margin:10px 0}
+    h1{font-size:20px}
+    </style></head><body>
+    
+    <header><b>Auto Center Veloz</b>
+    <nav><button data-t="k" class="on">Painel interno</button><button data-t="p">Portal do cliente</button></nav></header>
+    <main>
+      <h1 id="ti">Ordens de Serviço</h1>
+      <div class="k" id="kp"></div>
+      <div class="grid" id="kb"></div>
+      <div id="pt" style="display:none"><p>Página que o cliente abre pelo link do WhatsApp — sem senha e sem cadastro:</p><div class="phone" id="ph"></div></div>
+    </main>
+    <div id="mod"><div class="box" id="bx"></div></div>
+    
+    <script>
+    // Estados: [id, rótulo]
+    var E=[["aguardando","Aguardando diagnóstico"],["orcamento","Orçamento enviado"],["aprovado","Aprovado"],
+    ["execucao","Em execução"],["pronto","Pronto"],["entregue","Entregue"]];
+    var nom=id=>E.filter(e=>e[0]==id)[0][1];
+    var H=new Date(2026,9,6,9), h=h=>new Date(H-h*36e5);
+    
+    // Base de dados: OS
+    var S=[
+    {id:"OS-1046",pl:"QRA-7B22",ve:"Fiat Argo 1.3 · 2021",cl:"Renata Almeida",fone:"(11) 98812-4471",
+     es:"orcamento",mt:"João Batista",km:68420,qx:"Ruído metálico ao frear e vibração no volante acima de 80 km/h.",
+     ev:[["aguardando",h(28),"Camila (recepção)"],["orcamento",h(24),"Eduardo (gerente)"],["aprovado",h(11.5),"Cliente — aprovou parcialmente"]],
+     it:[["Pastilhas de freio dianteiras (jogo)","peça",389.90,"aprovado"],["Discos de freio dianteiros (par)","peça",742.00,"aprovado"],
+         ["Serviço de troca e sangria do sistema","serviço",280.00,"pendente"],["Alinhamento e balanceamento","serviço",180.00,"recusado"]]},
+    
+    {id:"OS-1045",pl:"GHT-2D08",ve:"Hyundai HB20 1.0 · 2019",cl:"Carlos Menezes",fone:"(11) 99745-2210",
+     es:"execucao",mt:"Rafael Nunes",km:91250,qx:"Perda de potência e luz de injeção acesa no painel.",
+     ev:[["aguardando",h(31),"Camila (recepção)"],["orcamento",h(29),"Eduardo (gerente)"],
+         ["aprovado",h(26),"Cliente — aprovou pelo portal"],["execucao",h(25),"Rafael Nunes (mecânico)"]],
+     it:[["Kit de correia dentada","peça",612.00,"aprovado"],["Bomba d'água","peça",430.00,"aprovado"],
+         ["Serviço de substituição do kit","serviço",520.00,"aprovado"]]},
+    
+    {id:"OS-1044",pl:"FKB-9C41",ve:"VW Polo 1.6 · 2017",cl:"Juliana Prado",fone:"(11) 98433-7712",
+     es:"aguardando",mt:"—",km:120400,qx:"Revisão dos 120 mil km e cheiro de combustível no habitáculo.",
+     ev:[["aguardando",h(4),"Camila (recepção)"]],it:[]},
+    
+    {id:"OS-1043",pl:"MDZ-5A77",ve:"Chevrolet Onix 1.0 · 2022",cl:"Paulo Ricardo Lima",fone:"(11) 99120-3388",
+     es:"pronto",mt:"João Batista",km:41880,qx:"Barulho na suspensão dianteira ao passar em lombada.",
+     ev:[["aguardando",h(52),"Camila (recepção)"],["orcamento",h(50),"Eduardo (gerente)"],["aprovado",h(47),"Cliente — aprovou pelo portal"],
+         ["execucao",h(44),"João Batista (mecânico)"],["pronto",h(6.5),"João Batista (mecânico)"]],
+     it:[["Bieletas da barra estabilizadora (par)","peça",238.00,"aprovado"],["Serviço de substituição","serviço",190.00,"aprovado"]]},
+    
+    {id:"OS-1042",pl:"BLK-1E93",ve:"Toyota Corolla 2.0 · 2020",cl:"Marcos Tavares",fone:"(11) 97654-1122",
+     es:"aguardando",mt:"—",km:57300,qx:"Ar-condicionado sem gelar e ruído na ventoinha.",
+     ev:[["aguardando",h(1.5),"Camila (recepção)"]],it:[]},
+    
+    {id:"OS-1041",pl:"NVP-8F56",ve:"Jeep Renegade 1.8 · 2018",cl:"Fernanda Costa",fone:"(11) 98201-6655",
+     es:"entregue",mt:"Rafael Nunes",km:88110,qx:"Troca de óleo, filtros e revisão geral.",
+     ev:[["aguardando",h(78),"Camila (recepção)"],["orcamento",h(76),"Eduardo (gerente)"],["aprovado",h(74),"Cliente — aprovou pelo portal"],
+         ["execucao",h(72),"Rafael Nunes (mecânico)"],["pronto",h(40),"Rafael Nunes (mecânico)"],["entregue",h(30),"Camila (recepção)"]],
+     it:[["Óleo sintético 5W30 (4L)","peça",312.00,"aprovado"],["Filtro de óleo e de ar","peça",148.00,"aprovado"],
+         ["Serviço de revisão geral","serviço",260.00,"aprovado"]]}
+    ];
+    
+    // Helpers
+    var B=v=>"R$ "+v.toFixed(2).replace(".",",");
+    var Q=d=>d.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+    var HA=d=>{var x=(H-d)/36e5;return x<1?Math.round(x*60)+"min":x<24?Math.round(x)+"h":Math.round(x/24)+"d"};
+    var G=id=>S.filter(o=>o.id==id)[0];
+    var TT=o=>{var a=o.it.filter(i=>i[3]=="aprovado"),p=o.it.filter(i=>i[3]=="pendente"),r=o.it.filter(i=>i[3]=="recusado");
+     return{ok:a.reduce((s,i)=>s+i[2],0),pe:p.reduce((s,i)=>s+i[2],0),re:r.reduce((s,i)=>s+i[2],0),n:p.length}};
+    var UR=o=>{var x=(H-o.ev[o.ev.length-1][1])/36e5;
+     if(o.es=="entregue")return[x,""];
+     if(o.es=="orcamento")return x>=24?[x,"r"]:x>=8?[x,"a"]:[x,""];
+     return[x,""]};
+    var LK=o=>"https://portal.autocenterveloz.com.br/os/"+o.id.toLowerCase()+"?t="+o.id.split("-")[1];
+    
+    // Painel interno (kanban)
+    function painel(){
+     var at=S.filter(o=>o.es!="entregue"),pe=S.filter(o=>o.es=="orcamento"&&TT(o).n>0),cr=pe.filter(o=>UR(o)[1]=="r");
+     document.getElementById("kp").innerHTML=K("OS ativas",at.length,"veículos na oficina agora")+
+      K("Em execução",S.filter(o=>o.es=="execucao").length+" / 5","elevadores ocupados")+
+      K("Orçamentos sem resposta",pe.length,cr.length?cr.length+" em nível crítico":"dentro do prazo")+
+      K("Veículos no pátio",at.length,"capacidade reduzida por espera");
+     document.getElementById("kb").innerHTML=E.map(function(e){
+      var L=S.filter(o=>o.es==e[0]);
+      return '<div class="col"><h3>'+e[1]+'<span>'+L.length+'</span></h3>'+
+       (L.length?L.map(function(o){
+         var u=UR(o),t=TT(o);
+         return '<div class="c '+(u[1]=="r"?"al":"")+'" onclick="abre(\''+o.id+'\')">'+
+          '<i>'+o.pl+'</i> <em>'+o.cl+'</em> <u class="'+u[1]+'">'+HA(u[0])+'</u>'+
+          '<div><b>'+o.ve+'</b></div><em>'+o.id+(t.ok>0?" · "+B(t.ok):"")+(t.n?" · "+t.n+" pendente(s)":"")+'</em></div>'}).join("")
+       :'<p>Nenhuma OS</p>')+'</div>'}).join("");
+    }
+    var K=(a,b,c)=>'<div class="k"><b>'+a+'</b><i>'+b+'</i><br><span style="font-size:12px">'+c+'</span></div>';
+    
+    // Detalhe da OS (recepção)
+    function abre(id){
+     var o=G(id),t=TT(o),i=E.map(e=>e[0]).indexOf(o.es),nx=E[i+1];
+     document.getElementById("bx").innerHTML='<h2>'+o.id+' · '+o.ve+'<button onclick="fecha()">&times;</button></h2><div>'+
+     '<div class="s"><b>Queixa:</b> '+o.qx+'</div><p>'+o.pl+' · '+o.cl+' · '+o.fone+'<br>'+
+     'Entrada: '+Q(o.ev[0][1])+' · Mecânico: '+o.mt+' · '+o.km+' km<br>'+
+     'Situação: <b>'+nom(o.es)+'</b> há '+HA(UR(o)[0])+' · Total autorizado: <b>'+B(t.ok)+'</b>'+
+     (t.pe>0?' · Aguardando decisão: <b>'+B(t.pe)+'</b>':'')+'</p>'+
+     '<table><tr><th>Item do orçamento</th><th>Tipo</th><th>Valor</th><th>Status</th></tr>'+
+     (o.it.length?o.it.map(i=>'<tr><td>'+i[0]+'</td><td>'+i[1]+'</td><td>'+B(i[2])+'</td><td>'+i[3]+'</td></tr>').join("")
+      :'<tr><td colspan="4">Diagnóstico em andamento</td></tr>')+'</table>'+
+     '<p style="margin-top:14px"><b>Histórico:</b><br>'+
+     o.ev.map(e=>nom(e[0])+" — "+Q(e[1])+" · "+e[2]).join("<br>")+'</p>'+
+     '<div class="s">Link enviado ao cliente por WhatsApp:<br>'+LK(o)+'</div>'+
+     '<p><button class="b" onclick="fecha()">Fechar</button> '+
+     (o.es!="aguardando"&&o.es!="entregue"?'<button class="b r" onclick="volta(\''+id+'\')">Voltar etapa</button> ':'')+
+     (nx&&o.es!="entregue"?'<button class="b p" onclick="avanca(\''+id+'\')">Avançar para '+nx[1]+'</button>'
+      :'<button class="b" disabled>Ordem encerrada</button>')+'</p></div>';
+     abreM();
+    }
+    // Avança / volta etapa
+    function avanca(id){var o=G(id),i=E.map(e=>e[0]).indexOf(o.es),n=E[i+1];if(!n)return;
+     o.es=n[0];o.ev.push([n[0],new Date(H),"Recepção / oficina"]);fecha();geral();}
+    function volta(id){var o=G(id),i=E.map(e=>e[0]).indexOf(o.es),a=E[i-1];if(!a)return;
+     o.es=a[0];o.ev.push([a[0],new Date(H),"Recepção — correção"]);fecha();geral();}
+    
+    // Portal do cliente
+    function portal(){
+     var o=S.filter(x=>x.es=="orcamento"&&TT(x).n>0)[0]||S[0],t=TT(o),pen=t.n>0;
+     document.getElementById("ph").innerHTML=
+     '<h4>Auto Center Veloz<small>'+o.ve+' · '+o.pl+'</small></h4><div>'+
+     '<div class="s '+(pen?"t":"")+'">'+(pen?'<b>Atenção:</b> há '+t.n+' item(ns) aguardando sua decisão.'
+      :'<b>Tudo em dia:</b> nenhuma decisão pendente.')+'</div>'+
+     '<p><b>Acompanhamento:</b><br>'+E.map(function(e){
+       var m=o.ev.filter(x=>x[0]==e[0])[0];
+       return (m?"✔ ":"• ")+e[1]+(m?" — "+Q(m[1]):"")}).join("<br>")+'</p>'+
+     '<table><tr><th>Item</th><th>Valor</th><th>Sua decisão</th></tr>'+
+     (o.it.length?o.it.map(i=>'<tr><td>'+i[0]+'<br><em>'+i[1]+'</em></td><td>'+B(i[2])+'</td><td>'+
+      (i[3]=="pendente"?'<button class="b v" onclick="decide(\''+i[0]+'\',1)">Aprovar</button><br><button class="b r" onclick="decide(\''+i[0]+'\',0)">Recusar</button>':i[3])
+      +'</td></tr>').join(""):'<tr><td colspan="3">Orçamento será publicado após o diagnóstico</td></tr>')+'</table>'+
+     '</div><div class="cta">Total autorizado: '+B(t.ok)+
+     (pen?'<br><button class="b v" style="margin-top:8px" onclick="lote()">Aprovar todos os pendentes</button>':'')+'</div>';
+    }
+    function decide(d,ap){var o=S.filter(x=>x.es=="orcamento"&&TT(x).n>0)[0]||S[0];
+     o.it.filter(i=>i[0]==d).forEach(i=>i[3]=ap?"aprovado":"recusado");
+     if(TT(o).n==0&&TT(o).ok>0){o.es="aprovado";o.ev.push(["aprovado",new Date(H),"Cliente — aprovou pelo portal"])}
+     portal();painel();}
+    function lote(){var o=S.filter(x=>x.es=="orcamento"&&TT(x).n>0)[0];if(!o)return;
+     o.it.forEach(i=>{if(i[3]=="pendente")i[3]="aprovado"});
+     o.es="aprovado";o.ev.push(["aprovado",new Date(H),"Cliente — aprovou pelo portal"]);portal();painel();}
+    
+    // Infra
+    function abreM(){document.getElementById("mod").classList.add("on")}
+    function fecha(){document.getElementById("mod").classList.remove("on")}
+    document.getElementById("mod").onclick=function(e){if(e.target.id=="mod")fecha()};
+    function tela(t){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));
+     document.getElementById("kb").style.display=t=="k"?"grid":"none";
+     document.getElementById("kp").style.display=t=="k"?"grid":"none";
+     document.getElementById("pt").style.display=t=="p"?"block":"none";
+     document.getElementById("ti").textContent=t=="k"?"Ordens de Serviço":"Portal do Cliente";
+     if(t=="p")portal();else painel();}
+    function geral(){painel();if(document.getElementById("pt").style.display=="block")portal()}
+    document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>tela(b.dataset.t));
+    document.onkeydown=e=>{if(e.key=="Escape")fecha()};
+    painel();
+    </script></body></html>
